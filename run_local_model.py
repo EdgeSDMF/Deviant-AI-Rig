@@ -14,8 +14,14 @@ print(f"Hardware Layer Locked: {torch.cuda.get_device_name(0)}")
 print("\n[1/2] Mapping local tokenizer configurations...")
 tokenizer = AutoTokenizer.from_pretrained(model_id, local_files_only=True)
 
-print("[2/2] Loading weights straight into RTX 3060 VRAM...")
-# Force placement directly to your active CUDA lane 0
+#Enforcing high-efficiency 4-bit quantization to fit the 12GB VRAM lane perfectly
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True
+)
+
 model = AutoModelForCausalLM.from_pretrained(
     model_id,
     torch_dtype=torch.float16,
