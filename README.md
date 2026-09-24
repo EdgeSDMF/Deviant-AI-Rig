@@ -25,3 +25,14 @@ The VRAM V bucket Constraint Resolution: When raw 16GB FP16 precision weights ov
 # Deviant-AI-Rig
 
 Self Contained Intel/AMD/Nvidia Multi Modal AI on a Budget
+
+## Hardware Constraints & Dual-Vendor Architectural Workarounds
+
+A primary engineering challenge of this bare-metal portfolio deployment was stabilizing an advanced multi-GPU AI environment on a budget hardware baseline consisting of an Intel Pentium Gold G5400 host processor. Because this CPU lacks native AVX2 vector math instructions, standard modern AI framework libraries (which assume advanced CPU instruction sets) routinely trigger fatal system kernel panics (`Illegal instruction`).
+
+To protect the host node and achieve full integration across three independent graphics cards, the architecture employs an asymmetric execution split:
+
+1. **Quantized Interactive Inference:** The primary conversational pipeline is compressed into 4-bit space to sit entirely inside the VRAM bank of a dedicated NVIDIA RTX 3060, isolating standard CUDA operations from the host processor.
+2. **Direct Vector-Mapped Background Batches:** To wake up the dual AMD Radeon RX 6700 XT background compute lanes without triggering external compiler errors or CPU math dependencies, we engineered a direct OpenCL pipeline. By bypassing standard ONNX binary stream compilation frameworks in favor of direct NumPy memory mapping arrays inside a localized virtual sandbox (`env`), text-ingestion batches are passed straight into the Radeon silicon bus via Mesa Clover driver runtimes.
+
+This setup demonstrates that enterprise-grade, localized private computing architectures can be built, isolated, and scaled successfully using budget, repurposed components and custom-mapped driver logic.
