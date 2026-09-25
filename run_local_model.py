@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 # Tell the transformers framework to strictly look at local files and block all internet calls
 import os
@@ -44,7 +44,7 @@ while True:
     with torch.no_grad():
         outputs = model.generate(
             **inputs, 
-            max_new_tokens=150,
+            max_new_tokens=1024,
             do_sample=True,
             temperature=0.7,
             top_p=0.9
