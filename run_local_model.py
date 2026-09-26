@@ -85,6 +85,7 @@ while True:
     # 🧼 THE HARD-CODED STRING SCRUBBER
     # This automatically strips out any bracketed links, parentheses blocks, URLs, and metadata tags before display
     clean_response = re.sub(r'\[.*?\]', '', raw_response)  # Strips out all [Source: ...] brackets
+    clean_response = re.sub(r'\[\d+', '', clean_response)  # Strips an open bracket followed by any numbers
     clean_response = re.sub(r'\(.*?\)', '', clean_response) # Strips out all (End of Text) parentheses loops
     clean_response = re.sub(r'http\S+', '', clean_response)  # Strips out any loose web domains completely
     
